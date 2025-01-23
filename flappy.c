@@ -8,25 +8,24 @@
 #include <termios.h>
 #include <signal.h>
 #include <sys/time.h>
+#include "functions.h"
 
-
-#define KEY_ESC 27
-
-clock_t t_m;
-clock_t difference=0;
-int kbhit(void);
 
 static volatile sig_atomic_t sig_var;
-void handler_fun();
+
+
+void handler_fun()
+{
+    sig_var=1;
+}
 
 int main()
 {
-
     char bird='@';
     int ch;
-    int H,W;
     int h=0;
     int w=0;
+    int background=2;
     
 	initscr();			/* Start curses mode 		  */
     noecho();
@@ -35,6 +34,18 @@ int main()
     getmaxyx(stdscr,H,W);
     h=H/2;
     mvaddch(h,w,bird);
+    landscape();
+    curs_set(0);
+    if(has_colors()==FALSE)
+    {
+        endwin();
+        printf("terminal does not support colors\n");
+        exit(1);
+    }
+    start_color();
+    init_pair(1,COLOR_YELLOW,0);
+    init_pair(background,COLOR_RED,COLOR_BLUE);
+    bkgd(COLOR_PAIR(background));
     refresh();
 
 
@@ -64,27 +75,54 @@ int main()
             if(ch==KEY_UP)
             {
                 mvaddch(h,w,' ');
-                mvaddch(--h,++w,bird);
+                if((mvinch(h-1,w+1) & A_CHARTEXT)=='#')
+                {
+                    game_over();
+                    //break;
+                }
+                attron(COLOR_PAIR(1));
+                mvaddch(--h,++w,bird & A_CHARTEXT);
+                attroff(COLOR_PAIR(1));
                 refresh();
             }else if(ch==KEY_DOWN)
             {
                 mvaddch(h,w,' ');
-                mvaddch(++h,++w,bird);
+                if((mvinch(h+1,w+1)& A_CHARTEXT)=='#')
+                {
+                    game_over();
+                    //break;
+                }
+                attron(COLOR_PAIR(1));
+                mvaddch(++h,++w,bird & A_CHARTEXT);
+                attroff(COLOR_PAIR(1));
                 refresh();
             }
             //printf("out of khbit\n");
         }
 
-        if(h>=H || h<=0 || w>=W)
-        break;
+        if(h>=H || h<=0)
+        game_over();
+
+        if(w>=W)
+        {
+            w=0;
+            clear();
+            landscape();
+        }
 
         if(sig_var)
         {
             sig_var=0;
             mvaddch(h,w,' ');
-            mvaddch(++h,++w,bird);
+            if((mvinch(h+1,w+1) & A_CHARTEXT)=='#')
+            {
+                game_over();
+                //break;
+            }
+            attron(COLOR_PAIR(1));
+            mvaddch(++h,++w,bird & A_CHARTEXT);
+            attroff(COLOR_PAIR(1));
             refresh();
-
         }
 
 
@@ -92,36 +130,4 @@ int main()
 
     endwin();
     return 0;
-}
-
-int kbhit(void)
-{
-  struct termios oldt, newt;
-  int ch;
-  int oldf;
- 
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
- 
-  ch = getchar();
- 
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-  fcntl(STDIN_FILENO, F_SETFL, oldf);
- 
-  if(ch != EOF)
-  {
-    ungetc(ch, stdin);
-    return 1;
-  }
- 
-  return 0;
-}
-
-void handler_fun()
-{
-    sig_var=1;
 }

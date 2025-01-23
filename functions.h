@@ -16,12 +16,8 @@
 
 
 extern int H,W;
-static volatile sig_atomic_t sig_var;
-
 
 int kbhit(void);
-
-void handler_fun();
 
 void landscape();
 

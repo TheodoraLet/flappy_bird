@@ -11,7 +11,6 @@
 #include "functions.h"
 
 int H,W;
-static volatile sig_atomic_t sig_var;
 
 int rand_number(int max,int min)
 {
@@ -46,10 +45,6 @@ int kbhit(void)
   return 0;
 }
 
-void handler_fun()
-{
-    sig_var=1;
-}
 
 void landscape()
 {
