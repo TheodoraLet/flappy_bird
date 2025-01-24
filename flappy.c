@@ -19,22 +19,29 @@ void handler_fun()
     sig_var=1;
 }
 
+
 int main()
 {
     char bird='@';
     int ch;
     int h=0;
     int w=0;
-    int background=2;
+    int lives_index=3;
+    int points=0;
     
 	initscr();			/* Start curses mode 		  */
     noecho();
     keypad(stdscr,TRUE);
     cbreak();
     getmaxyx(stdscr,H,W);
+    // resize_term(2*H,2*W);
+    // H=2*H;
+    // W=2*W;
     h=H/2;
     mvaddch(h,w,bird);
     landscape();
+    lives_init();
+    count_points(points);
     curs_set(0);
     if(has_colors()==FALSE)
     {
@@ -42,10 +49,8 @@ int main()
         printf("terminal does not support colors\n");
         exit(1);
     }
-    start_color();
-    init_pair(1,COLOR_YELLOW,0);
-    init_pair(background,COLOR_RED,COLOR_BLUE);
-    bkgd(COLOR_PAIR(background));
+    
+    add_colors();
     refresh();
 
 
@@ -74,28 +79,12 @@ int main()
 
             if(ch==KEY_UP)
             {
-                mvaddch(h,w,' ');
-                if((mvinch(h-1,w+1) & A_CHARTEXT)=='#')
-                {
-                    game_over();
-                    //break;
-                }
-                attron(COLOR_PAIR(1));
-                mvaddch(--h,++w,bird & A_CHARTEXT);
-                attroff(COLOR_PAIR(1));
-                refresh();
+                move_up(&h,&w,&lives_index,&points,bird);
+               
             }else if(ch==KEY_DOWN)
             {
-                mvaddch(h,w,' ');
-                if((mvinch(h+1,w+1)& A_CHARTEXT)=='#')
-                {
-                    game_over();
-                    //break;
-                }
-                attron(COLOR_PAIR(1));
-                mvaddch(++h,++w,bird & A_CHARTEXT);
-                attroff(COLOR_PAIR(1));
-                refresh();
+                move_down(&h,&w,&lives_index,&points,bird);
+          
             }
             //printf("out of khbit\n");
         }
@@ -108,21 +97,15 @@ int main()
             w=0;
             clear();
             landscape();
+            lives_init();
+            lives_count(lives_index);
+            count_points(points);
         }
 
         if(sig_var)
         {
             sig_var=0;
-            mvaddch(h,w,' ');
-            if((mvinch(h+1,w+1) & A_CHARTEXT)=='#')
-            {
-                game_over();
-                //break;
-            }
-            attron(COLOR_PAIR(1));
-            mvaddch(++h,++w,bird & A_CHARTEXT);
-            attroff(COLOR_PAIR(1));
-            refresh();
+            move_down(&h,&w,&lives_index,&points,bird);
         }
 
 
