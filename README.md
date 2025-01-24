@@ -4,6 +4,11 @@ This is a flappy bird ~philosophy~ game that uses ncurses. The user has 3 lives 
 ## How to play
 By using up and down key.
 
+# How to compile
+```
+gcc -o run flappy.c functions.c -lncurses
+```
+
 ## Photo of game play
 ![Screenshot from 2025-01-24 17-15-50](https://github.com/user-attachments/assets/450b0ee1-7c0d-45fb-860c-97cf73caca99)
 ## Photo of game over screen
