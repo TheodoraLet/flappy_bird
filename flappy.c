@@ -90,7 +90,7 @@ int main()
         }
 
         if(h>=H || h<=0)
-        game_over();
+        game_over(points);
 
         if(w>=W)
         {
@@ -98,7 +98,7 @@ int main()
             clear();
             landscape();
             lives_init();
-            lives_count(lives_index);
+            lives_count(lives_index,points);
             count_points(points);
         }
 

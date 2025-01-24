@@ -84,14 +84,18 @@ void landscape()
 }
 
 
-void game_over()
+void game_over(int points)
 {
   erase();
   mvvline(0,0,'#',H);
   mvvline(0,W-1,'#',H);
   mvhline(0,0,'#',W);
   mvhline(H-1,0,'#',W);
-  mvprintw(H/2,W/2,"GAME OVER");
+  attron(A_BOLD);
+  mvprintw(H/2,0.45*W,"GAME OVER");
+  attroff(A_BOLD);
+  mvprintw(0.75*H,0.4*W,"Points scored %d",points);
+  mvprintw(0.85*H,0.4*W,"(Press ESC to exit)");
   refresh();
 }
 
@@ -103,11 +107,11 @@ void lives_init()
   mvprintw(0,4,"<3");
 }
 
-void lives_count(int lives_index)
+void lives_count(int lives_index,int points)
 {
   if(lives_index==0)
   {
-    game_over();
+    game_over(points);
   }else if(lives_index==2)
   {
     mvprintw(0,4,"  ");
@@ -129,7 +133,7 @@ void move_up(int* h,int* w,int* lives_index,int* points,char bird)
   mvaddch(*h,*w,' ');
   if((mvinch(*h-1,*w+1) & A_CHARTEXT)=='#')
   {
-      lives_count(--(*lives_index));
+      lives_count(--(*lives_index),*points);
   }else if((mvinch(*h-1,*w+1) & A_CHARTEXT)=='0')
   {
       count_points(++(*points));
@@ -145,7 +149,7 @@ void move_down(int* h,int* w,int* lives_index,int* points,char bird)
   mvaddch(*h,*w,' ');
   if((mvinch(*h+1,*w+1)& A_CHARTEXT)=='#')
   {
-      lives_count(--(*lives_index));
+      lives_count(--(*lives_index),*points);
   }else if((mvinch(*h+1,*w+1) & A_CHARTEXT)=='0')
   {
       count_points(++(*points));

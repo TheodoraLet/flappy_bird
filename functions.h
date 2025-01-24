@@ -23,11 +23,11 @@ void landscape();
 
 int rand_number(int max,int min);
 
-void game_over();
+void game_over(int points);
 
 void lives_init();
 
-void lives_count(int lives_index);
+void lives_count(int lives_index,int points);
 
 void count_points(int points);
 
