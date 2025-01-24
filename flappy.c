@@ -77,11 +77,11 @@ int main()
             if(ch==KEY_ESC)
             break;
 
-            if(ch==KEY_UP)
+            if(ch==KEY_UP && lives_index!=0)
             {
                 move_up(&h,&w,&lives_index,&points,bird);
                
-            }else if(ch==KEY_DOWN)
+            }else if(ch==KEY_DOWN && lives_index!=0)
             {
                 move_down(&h,&w,&lives_index,&points,bird);
           
@@ -90,7 +90,10 @@ int main()
         }
 
         if(h>=H || h<=0)
-        game_over(points);
+        {
+            lives_index=0;
+            game_over(points);
+        }
 
         if(w>=W)
         {
@@ -105,7 +108,9 @@ int main()
         if(sig_var)
         {
             sig_var=0;
+            if(lives_index!=0)
             move_down(&h,&w,&lives_index,&points,bird);
+            
         }
 
 
